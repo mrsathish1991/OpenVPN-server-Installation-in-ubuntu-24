@@ -1,0 +1,191 @@
+Step 1: Update your system
+sudo apt update && sudo apt upgrade -y
+Step 2: Install OpenVPN and Easy-RSA
+
+sudo apt install openvpn easy-rsa -y
+
+Step 3: Set up Easy-RSA
+
+Copy the Easy-RSA template:
+
+make-cadir ~/openvpn-ca
+cd ~/openvpn-ca
+
+root@openvpnsvr001:~/openvpn-ca# ./easyrsa init-pki
+
+Notice
+------
+'init-pki' complete; you may now create a CA or requests.
+
+Your newly created PKI dir is:
+* /root/openvpn-ca/pki
+
+Using Easy-RSA configuration:
+* /root/openvpn-ca/vars
+
+root@openvpnsvr001:~/openvpn-ca#
+
+root@openvpnsvr001:~/openvpn-ca# ./easyrsa build-ca nopass
+Using Easy-RSA 'vars' configuration:
+* /root/openvpn-ca/vars
+
+Using SSL:
+* openssl OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+..+....+..............+.+..+....+...+........+...+.+.........+.........+..+...+.......+.....+.+...+..............+......+......+.+...+...............+...........+...+.+..+..........+.........+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*........+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+......+............+..+...+.............+.....+....+...........+...+......+......+.......+..+......+.......+..+...+.......+..................+.....+.+......+.....+.+.....+....+......+........+....+...+...+.........+..+.+...+......+.....+...+...+....+...+...+..+......+.........+.+............+..+......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.........+...+.........+..+...+..........+...+..+.+.....+.+......+........+.+.....+.+..+.+.........+.....+...+.........+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*....+................+..+.+.....+....+.....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Common Name (eg: your user, host, or server name) [Easy-RSA CA]:openvpnsvr001
+
+Notice
+------
+CA creation complete. Your new CA certificate is at:
+* /root/openvpn-ca/pki/ca.crt
+
+root@openvpnsvr001:~/openvpn-ca#
+
+
+
+
+root@openvpnsvr001:~/openvpn-ca# ./easyrsa gen-req server nopass
+Using Easy-RSA 'vars' configuration:
+* /root/openvpn-ca/vars
+
+Using SSL:
+* openssl OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+...+..+.......+...+..............+...+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*........+.+......+...+...+.....+......................+.....+.+..............+.+..+....+......+..+...+..................+.+......+..+...+.........+.+.........+.....+....+..+.......+..+.+...+.........+..+....+.....+...............+.+.....+.+...+......+.....+.........................+.........+........................+...............+...+.....+...+....+..+.+........+.......+............+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*....+.+............+...+..+......+.......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*....+............................+...............+...+..+.......+...+.....+.......+..+..........+.........+.........+..+...+............+.+.........+...........+.............+.....+................+.....+...+......+............+...+.+...+...........+......+....+..+...+......+.+.....+..........+............+..+..........+...+......+......+.........+......+.....+...+.+......+.....+...+..........+..+.+..............................+..+...+............+..........+...+........+.+......+..............+...+.+.........+..+.+..+...+...+......+.............+......+......+...+..+...+...+...+....+.....+...+...+....+..+...+......+........................+......+.+.....+......+.......+..+.+.....+...................+..............+.........+................+.........+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Common Name (eg: your user, host, or server name) [server]:openvpn001
+
+Notice
+------
+Private-Key and Public-Certificate-Request files created.
+Your files are:
+* req: /root/openvpn-ca/pki/reqs/server.req
+* key: /root/openvpn-ca/pki/private/server.key
+
+root@openvpnsvr001:~/openvpn-ca#
+
+
+root@openvpnsvr001:~/openvpn-ca# ./easyrsa sign-req server server
+Using Easy-RSA 'vars' configuration:
+* /root/openvpn-ca/vars
+
+Using SSL:
+* openssl OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+You are about to sign the following certificate:
+Please check over the details shown below for accuracy. Note that this request
+has not been cryptographically verified. Please be sure it came from a trusted
+source or that you have verified the request checksum with the sender.
+Request subject, to be signed as a server certificate
+for '825' days:
+
+subject=
+    commonName                = openvpn001
+
+Type the word 'yes' to continue, or any other input to abort.
+  Confirm request details: yes
+
+Using configuration from /root/openvpn-ca/pki/openssl-easyrsa.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+commonName            :ASN.1 12:'openvpn001'
+Certificate is to be certified until Jun 15 05:20:36 2028 GMT (825 days)
+
+Write out database with 1 new entries
+Database updated
+
+Notice
+------
+Certificate created at:
+* /root/openvpn-ca/pki/issued/server.crt
+
+root@openvpnsvr001:~/openvpn-ca#
+
+
+
+root@openvpnsvr001:~/openvpn-ca# ls pki/private/
+ca.key  server.key
+root@openvpnsvr001:~/openvpn-ca# ls pki/issued/
+server.crt
+root@openvpnsvr001:~/openvpn-ca#
+
+
+
+Step 5: Generate Diffie-Hellman parameters
+./easyrsa gen-dh
+
+
+DH parameters appear to be ok.
+
+Notice
+------
+
+DH parameters of size 2048 created at:
+* /root/openvpn-ca/pki/dh.pem
+
+root@openvpnsvr001:~/openvpn-ca#
+
+
+Step 6: Generate TLS authentication key (optional but recommended)
+openvpn --genkey --secret ta.key
+
+Place ta.key in the OpenVPN config folder /etc/openvpn/
+
+
+root@openvpnsvr001:~/openvpn-ca# openvpn --genkey --secret ta.key
+2026-03-13 05:25:38 DEPRECATED OPTION: The option --secret is deprecated.
+2026-03-13 05:25:38 WARNING: Using --genkey --secret filename is DEPRECATED.  Use --genkey secret filename instead.
+root@openvpnsvr001:~/openvpn-ca#
+
+
+ sudo nano /etc/openvpn/server/server.conf
+
+port 1194
+proto udp
+dev tun
+
+ca /home/ubuntu/openvpn-ca/pki/ca.crt
+cert /home/ubuntu/openvpn-ca/pki/issued/server.crt
+key /home/ubuntu/openvpn-ca/pki/private/server.key
+dh /home/ubuntu/openvpn-ca/pki/dh.pem
+tls-auth /etc/openvpn/ta.key 0
+
+server 10.8.0.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
+
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+
+keepalive 10 120
+cipher AES-256-CBC
+auth SHA256
+persist-key
+persist-tun
+
+status openvpn-status.log
+verb 3
+
+Step 2: Enable IP forwarding
+sudo nano /etc/sysctl.conf
+
+Ensure this line exists and is uncommented:
+
+net.ipv4.ip_forward=1
+
